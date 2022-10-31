@@ -1,0 +1,275 @@
+/* image credits
+snow.gif: http://i1005.photobucket.com/albums/af171/shortfuze94/falling-snow.gif
+snow.png: https://raw.githubusercontent.com/MrInanimated/bp-overlay/master/themes/xmas/snow_backdrop.png
+lava.jpg: https://s-media-cache-ak0.pinimg.com/564x/da/5c/7d/da5c7d8f4e57a47e512f4cce624cf18a.jpg
+copycat.jpg: http://officialnicole.com/wp-content/uploads/2015/11/copycats.jpg
+favicon.png: http://www.fancyicons.com/free-icons/139/oxe/png/64/termometer_64.png
+*/
+html{
+	height:100%;
+	background:white;
+}
+body.cool{
+	background-image:url(images/snow.webp), url(images/snowing.gif);
+	background-position:center bottom, left top;
+	background-repeat:repeat-x, repeat;
+}
+body.heat{
+	background-image:url(images/lava.webp);
+}
+body.copy{
+	background-repeat:no-repeat, no-repeat, repeat;
+	background-image:url(images/copycat.webp), url(images/copycat.webp), url('data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAQCdASoBAAEAAgA0JaACdLoB+AAETAAA/uZp3/n5nduL+q3/0mzxNnibPgAAAAA=');
+	background-position:108px calc(100% - 14px), calc(100% - 107px) calc(100% - 14px), top left;
+}
+body:not(.heat) #body .aux,
+body:not(.heat) #body .item.aux,
+body.copy #newSettings,
+#body form.K .deg,
+#oldSettings:not(.heat) tr > .aux,
+#oldSettings:not(.heat) div.aux,
+#oldSettings:not(.copy) .copycat,
+#oldSettings.copy table,
+body:not(.copy) #footer .copycat,
+body:not(.heat) span.heat,
+body:not(.heat) li.heat,
+body:not(.cool) span.cool,
+body:not(.cool) li.cool,
+body:not(.copy) span.copycat,
+body:not(.copy) li.copycat,
+body.copy #body .nocopy,
+#body:not(.noob) .noob,
+#body.noob .adv,
+.F .C,
+.F .K,
+.C .F,
+.C .K,
+.K .F,
+.K .C,
+.tool:not(:hover) .tip,
+.tool .tip:hover,
+#mobileFooter{
+	display:none;
+}
+.tool{
+	position:relative;
+}
+.tip{
+	background-color:rgba(0,0,0,.85);
+	position:absolute;
+	bottom:100%;
+	left:75%;
+	border:solid 1px white;
+	border-radius:5px;
+	width:225px;
+	padding:5px;
+}
+body.heat #status td:first-child .Right,
+body.heat #status td:last-child .Right,
+body.cool #status td:first-child .Left{
+	color:red;
+}
+body.heat #status td:first-child .Left,
+body.heat #status td:last-child .Left,
+body.cool #status td:first-child .Right{
+	color:lime;
+}
+#oldSettings.copy .copycat,
+#oldSettings.heat div.aux,
+#body > #cron_status{
+	display:block;
+}
+#oldSettings.heat tr > .aux{
+	display:table-cell;
+}
+body{
+	text-align:center;
+	font-family:"Times New Roman";
+	margin:0;
+	min-height:100%;
+	padding:0 3px;
+}
+body > div.padding{
+	display:block;
+	height:5px;
+}
+a{
+	color:teal;
+}
+code{
+	font-size:15px;
+}
+
+#content{
+	text-align:left;
+	display:block;
+	max-width:650px;
+	min-width:620px;
+	width:auto;
+	margin:0 auto;
+	background:rgba(0,0,0,.85);
+	color:white;
+	border-radius:10px;
+	padding:7px;
+}
+#header{
+	padding-left:64px;
+	min-height:64px;
+	background-image:url(images/favicon.png);
+	background-position:left center;
+	background-repeat:no-repeat;
+	font-size:32px;
+}
+#header #temp{
+	display:inline-block;
+	float:right;
+	color:black;
+	background:rgba(255,255,255,.8);
+	border-radius:5px;
+	padding:0 5px;
+}
+#footer{
+	padding-top:5px;
+}
+#body{
+	min-height:400px;
+}
+#body input[type="text"],
+#body input[type="number"]{
+	text-align:left;
+}
+#body input[type="number"][size="2"]{
+	width:37px;
+}
+#body input[type="number"][size="3"]{
+	width:44px;
+}
+#body input[type="checkbox"],
+#body select,
+#body input[type="button"]{
+	cursor:pointer;
+}
+#body .item{
+	width:45%;
+	display:block;
+	margin-top:3px;
+	line-height:24px;
+}
+#body .label,#body .value{
+	width:calc( 50% - 2px );
+	display:inline-block;
+}
+#body #tips{
+	float:right;
+	width:55%;
+}
+#body #tips ul{
+	padding-left:20px;
+}
+#body h3, #body #tips ul{
+	margin:0;
+}
+#body > div, #body > div h3{
+	display:inline-block;
+	text-align:center;
+}
+#notice{
+	background:darkred;
+	color:white;
+	border-radius:5px;
+	padding:5px;
+	font-size:18px;
+	margin-top:5px;
+}
+#settings{
+	width:100%;
+}
+#settings div:first-child{
+	float:left;
+}
+#settings div:last-child{
+	float:right;
+}
+#settings div{
+	width:calc(50% - 2px);
+}
+#buttons input{
+	padding:0 5px;
+}
+#body #status{
+	margin-top:10px;
+	width:100%;
+}
+#body #status.side{
+	float:right;
+	width:calc( 29% - 2px );
+}
+#body #status:not(.side) > div{
+	width: calc( 50% - 2px);
+	display: inline-block;
+}
+#body #weather{
+	margin-top:10px;
+	width:calc( 71% - 2px);
+}
+#body > div h3{
+	width:100%;
+}
+#body > div table{
+	margin:0 auto;
+}
+table,th,td{
+	border-radius:3px;
+}
+th,td{
+	padding:2px 3px;
+}
+#footer,
+#mobileFooter{
+	text-align:center;
+}
+@media (max-width:874px){
+	body.copy{
+		background-position:bottom left, bottom right, top left;
+	}
+}
+@media (max-width:768px){
+	body.cool{
+		background-image:url(images/snow.webp), url(images/snowing_still.gif);
+	}
+}
+@media (max-width:635px){
+	body.copy{
+		background-position:bottom center, bottom center, top left;
+	}
+	#oldSettings,
+	#footer,
+	#weather,
+	#tips,
+	#status,
+	.tip{
+		display:none!important;
+	}
+	#mobileFooter{
+		display:block;
+	}
+	#header{
+		font-size:27px;
+	}
+	#content{
+		width:338px;
+		min-width:300px;
+	}
+	#settings div,
+	#body .item{
+		width:100%;
+	}
+	#buttons input{
+		min-height:40px;
+	}
+}
+@media (max-width:359px){
+	#content{
+		width:calc(100% - 17px);
+	}
+}

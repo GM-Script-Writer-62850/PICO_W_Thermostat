@@ -1,0 +1,87 @@
+.right{
+	text-align:right;
+}
+.center{
+	text-align:center;
+}
+#buttons > div{
+	width:calc( 100% / 3 - 3px ) !important;
+	display:inline-block;
+}
+#overlay{
+	position:fixed;
+	top:0;
+	left:0;
+	background-color:rgba(56,56,56,.5);
+	width:100%;
+	height:100%;
+}
+#overlay > div{
+	margin-top:5px;
+	padding:5px;
+	background-color:rgba(0, 0, 0, 0.85);
+	color:white;
+	border-radius:10px;
+	margin-left:auto;
+	margin-right:auto;
+	width:650px;
+}
+#overlay > div > input:not(:nth-child(4)){
+	margin-right:55px;
+}
+#overlay select,#overlay input[type="button"],#overlay input[type="checkbox"]{
+        cursor:pointer;
+}
+#overlay p{
+	text-indent:50px;
+	text-align:left;
+}
+#events{
+	max-height:485px;
+	overflow-y:auto;
+	text-align:left;
+}
+#events .event{
+	position:relative;
+	border:1px white solid;
+	border-radius:5px;
+	margin-top:5px;
+	padding:5px;
+	column-count:3;
+	column-gap:0;
+	text-align:center;
+}
+#events .event > *{
+	display:inline-block;
+}
+#events .event ul{
+	margin:0;
+	padding-left:0;
+	column-count:2;
+	text-align:left;
+}
+#events .event li{
+	list-style:none;
+	
+}
+#events .event .ctrl input:first-child{
+	margin-bottom:5px;
+}
+#events .event .ctrl input:not([type="checkbox"]){
+	width:100%;
+	box-sizing:border-box;
+}
+#events .event select{
+	max-width:55px;
+}
+@media (max-width:649px){
+	#overlay > div{
+		width:auto;
+	}
+	#overlay > div > input:not(:nth-child(4)){
+		margin-right:1px;
+	}
+	#events .event{
+		column-count:unset;
+	}
+}
