@@ -38,7 +38,7 @@ class time:
 			date+=str(t[3]-(0 if t[3] == 12 else 12))
 			m=" PM"
 		else:
-			date+=str(t[3])
+			date+=str(t[3] if t[3] > 0 else 12)
 			m=" AM"
 		date+=':'
 		if t[4]<10:
