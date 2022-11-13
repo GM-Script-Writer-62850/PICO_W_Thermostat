@@ -22,7 +22,7 @@ class sun:
   self.lat=lat
   self.long=long
   self.TzOffset = TzOffset
-  time.tzset(TzOffset)
+  time.tz.set(TzOffset)
 
  def sunrise(self,when=None):
   """

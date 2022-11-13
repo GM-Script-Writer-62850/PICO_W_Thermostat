@@ -1,7 +1,20 @@
 <?php
 $file='data/thermostat.json';
 $log='data/thermostat.txt';
-if(isset($_GET['firstboot'])){
+function getDST(){
+	$timeZone = new DateTimeZone('America/New_York');
+	$trans = $timeZone->getTransitions(strtotime('first day of January this year'));
+	return (object)array(
+		"start" => $trans[1]["ts"],
+		"end" => $trans[2]["ts"],
+		"update" => strtotime('first day of January next year')+7201// 2AM
+	);
+}
+if(isset($_GET['dst'])){
+	header('Content-type: application/json');
+	echo json_encode(getDST());
+}
+else if(isset($_GET['firstboot'])){
 	if(file_exists($file)){
 		set_time_limit(0);
 		ob_start();
@@ -18,7 +31,9 @@ if(isset($_GET['firstboot'])){
 		$file=file_get_contents($file);
 		$file=json_decode($file);
 		$file->{"noexport"}=time();
+		$file->{"dst"}=getDST();
 		$file=json_encode($file);
+
 		$options = array(
 			'http' => array(
 				'header'  => array(
@@ -95,7 +110,7 @@ else{
 				$file=$log;
 				$page=1;
 			}
-			else if (file_exists($log.'.'.$file)){
+			else if(file_exists($log.'.'.$file)){
 				$page=$file;
 				$file=$log.'.'.$file;
 			}

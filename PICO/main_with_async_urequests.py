@@ -11,7 +11,7 @@ import uasyncio
 import uasync_requests as urequest
 
 sleep = uasyncio.sleep_ms
-time.tzset(-4)
+time.tz.set(-5)
 
 #'{"target": 72.5, "format": "F", "auxon": 1, "auxenabled": 1, "enabled": 1, "auxoff": 2, "trigger": 1, "sunset": 30, "night": 0, "day": 0, "sunrise": 90}'
 
@@ -41,7 +41,7 @@ class config:
 	remote_ip="10.0.0.69"
 	remote_url="http://"+remote_ip+":8081/thermostat/"
 	cron=[]
-	#cron=[{"enable":False,"days":[5,6],"time":{"start":{"h":22,"m":30},"end":{"h":23,"m":59}},"offset":-0.25,"name":"1. Chad wants cooler for sleep on weekend"},{"enable":False,"days":[6,0],"time":{"start":{"h":0,"m":0},"end":{"h":3,"m":0}},"offset":-0.25,"name":"2. Chad wants cooler for sleep on weekend"},{"enable":True,"days":[1,2,3,4,5,6,0],"time":{"start":{"h":4,"m":0},"end":{"h":10,"m":0}},"offset":-0.27778,"name":"Lower temp in early morning"}]
+	dst_update=0
 #END config
 
 class solar:
@@ -223,9 +223,18 @@ async def getSolar():
 	import sunTime
 	from gps_cords import LONGITUDE, LATITUDE
 
-	TIMEZONE_DIFFERENCE = time.tz_sec*-1# used to convert time stamp from local to UTC
+	class TZ:# used to convert time stamp from local to UTC
+		delta=-time.tz.sec
+		delta_dst=-time.tz.sec-time.dst.offset
+
 	while True:
-		sun = sunTime.sun(lat=LATITUDE,long=LONGITUDE,TzOffset=time.tz)
+		if time.dst.start <= time.time()+3600 <= time.dst.end:# check for DST after 2AM
+			TIMEZONE_DIFFERENCE=TZ.delta_dst
+		else:
+			TIMEZONE_DIFFERENCE=TZ.delta
+		sunTime.time.dst.start=time.dst.start
+		sunTime.time.dst.end=time.dst.end
+		sun = sunTime.sun(lat=LATITUDE,long=LONGITUDE,TzOffset=time.tz.hr)
 		sunrise = sun.sunrise()
 		sunset = sun.sunset()
 		solar.rise.time=str(sunrise[3])+":"+f'{sunrise[4]:02}'+" AM"
@@ -244,8 +253,30 @@ async def getSolar():
 		then=time.mktime(then)+3601
 		now=time.mktime(now)
 
-		await uasyncio.sleep(then-now) # Tomorrow at 1AM
+		await uasyncio.sleep(then-now) # Tomorrow after 1AM
 #END getSolar()
+
+async def getDST():
+	def long_sleep(seconds):
+		# uasyncio.sleep(sec); sec*1000 must be under the 32bit limit of 2,147,483,647
+		while seconds > 2000000:
+			await uasyncio.sleep(2000000)
+			seconds -= 2000000
+		await uasyncio.sleep(seconds)
+
+	await long_sleep(config.dst_update-time.time())
+	while True:
+		r=await urequest.get(config.remote_url+"?dst")
+		if r.status_code != 200:
+			await sleep(10000)
+			continue
+		data=json_decode(r.content)
+		time.dst.start=data['start']
+		time.dst.end=data['end']
+		config.dst_update=data['update']
+
+		await long_sleep(data['update']-time.time()) #Jan 1 at 2AM
+#END getDST()
 
 def updateTarget(on):
 	# not using async intentionally
@@ -739,6 +770,11 @@ async def webUI(reader, writer):
 						"bottom_relay":bool(GPIO.thermostat.relay[1].value()),
 						"led":not GPIO.thermostat.LED[0].value()# 0=on;1=off
 					},
+					"DST":{
+						"start":debugData(time.dst.start),
+						"end":debugData(time.dst.end),
+						"update":debugData(config.dst_update)
+					},
 					"solar":{
 						"config":{
 							"rise":{
@@ -780,7 +816,7 @@ async def webUI(reader, writer):
 					}
 				})
 			else:
-				json='{"Error":"File type not implemented, typo?"}'
+				json='{"Error":"File not implemented, typo?"}'
 			writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\nContent-Length: '+str(len(json))+'\r\nCache-Control: no-cache\r\n\r\n'+json)
 		elif file == 'www/logView.php':
 			writer.write('HTTP/1.0 308 Permanent Redirect\r\nLocation: '+config.remote_url)
@@ -797,7 +833,7 @@ async def webUI(reader, writer):
 			print('404 Error',file)
 			writer.write('HTTP/1.0 404 NOT FOUND\r\nContent-type: text/html\r\n\r\n<html><head><title>404 Error</title></head><body>404 File not found</body></html>')
 	elif request[0]=="POST":
-		data=await reader.read(length)
+		data=await reader.readexactly(length)
 		data=data.decode("utf-8")
 		data=json_decode(data)
 		if 'format' in data:
@@ -825,6 +861,10 @@ async def webUI(reader, writer):
 			config.solar.day=float(data['night'])
 		if 'cron' in data:
 			config.cron=data['cron']
+		if 'dst' in data:
+			time.dst.start=data['dst']['start']
+			time.dst.end=data['dst']['end']
+			config.dst_update=data['dst']['update']
 		if 'noexport' in data:# noexport is only sent by 10.0.0.69 when restoring settings
 			logging.clock.time_delta=data['noexport']-time.time()
 			writer.write('HTTP/1.0 200 OK\r\nContent-type: text/plain\r\nContent-Length: 2\r\nCache-Control: no-cache\r\n\r\nOK')
@@ -859,9 +899,14 @@ async def main():
 	print('Started Web UI')
 
 	uasyncio.create_task(requestConfig())
+
 	await sleep(250)
 	ntptime.host = config.remote_ip
 	await setTime()
+
+	while time.dst.start == time.dst.end:
+		await sleep(1000)
+	uasyncio.create_task(getDST())
 
 	while 1:
 		await sleep(86400000)# 1 day
