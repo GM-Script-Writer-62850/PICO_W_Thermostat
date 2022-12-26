@@ -443,7 +443,7 @@ async def thermostat(delay):
 							cycled+=1
 							GPIO.thermostat.relay[1].value(0) # Heat slower
 							appendLog(1)
-					if cycled == 1 and temp > Otemp: # Lets not waist the heat we just got via Aux
+					if cycled == 1 and config.temp.temp > Otemp: # Lets not waist the heat we just got via Aux
 						Otemp=config.temp.temp
 					await sleep(delay)
 					await read_temp(delay)
